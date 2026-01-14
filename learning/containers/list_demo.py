@@ -1,0 +1,36 @@
+from collections import Counter
+
+if __name__ == '__main__':
+    a = [1, 2, 3, 1, 2, 3, 2, 2, 4, 5, 1]
+    print(set(a))
+    print(max(set(a)))
+    print(max(set(a), key=a.count))  # 出现次数最多的元素
+
+    print(Counter(a))  # 统计每个元素出现的次数
+    print(Counter(a).most_common(2))  # 出现次数最多的前
+    s1, s2 = 'abc', 'cba'
+    print(Counter(s1) == Counter(s2))  # 判断两个字符串是否由相同字符组成
+
+    s = 'abcdefghijklmnopqrstuvwxyz'
+    print(s[::-1])  # 字符串反转
+    n = 123456789
+    print(int(str(n)[::-1]))  # 整数反转
+    print(a[::-1])  # 列表反转
+
+    original = [['a', 'b'], ['c', 'd'], ['e', 'f']]
+    transposed = zip(*original)  # 转置二维数组
+    print(list(transposed))
+
+    lst = [40, 10, 20, 30, 20, 50, 30, 20]
+    print(min(range(len(lst)), key=lst.__getitem__))  # 返回最小值的索引
+    print(max(range(len(lst)), key=lst.__getitem__))  # 返回最大值的索引
+
+    print(list(set(lst)))  # 去重但不保证顺序
+    print(sorted(set(lst), key=lst.index))  # 去重并保持顺序
+
+    print(sum([i for i in range(100) if i % 2 == 0]))  # 计算0-99之间所有偶数的和
+
+    # 列表推导式
+    print([i ** 2 for i in range(1, 100) if i % 2 == 1])  # 1-99之间所有奇数的平方列表
+    # 嵌套推导
+    print([ch for row in original for ch in row])  # 将二维数组展开为一维数组
