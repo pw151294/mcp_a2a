@@ -1,3 +1,6 @@
+from learning.decorators import log_record
+
+
 def fibonacci(n: int):
     a, b = 0, 1
     count = 0
@@ -6,7 +9,7 @@ def fibonacci(n: int):
         a, b = b, a + b
         count += 1
 
-
+@log_record
 def generate_user_data(total: int):
     for i in range(total):
         yield {
