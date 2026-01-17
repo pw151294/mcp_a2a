@@ -407,6 +407,15 @@ wheels = [
 ]
 
 [[package]]
+name = "filelock"
+version = "3.20.3"
+source = { registry = "https://mirrors.aliyun.com/pypi/simple/" }
+sdist = { url = "https://mirrors.aliyun.com/pypi/packages/1d/65/ce7f1b70157833bf3cb851b556a37d4547ceafc158aa9b34b36782f23696/filelock-3.20.3.tar.gz", hash = "sha256:18c57ee915c7ec61cff0ecf7f0f869936c7c30191bb0cf406f1341778d0834e1" }
+wheels = [
+    { url = "https://mirrors.aliyun.com/pypi/packages/b5/36/7fb70f04bf00bc646cd5bb45aa9eddb15e19437a28b8fb2b4a5249fac770/filelock-3.20.3-py3-none-any.whl", hash = "sha256:4b0dda527ee31078689fc205ec4f1c1bf7d56cf88b6dc9426c4f230e46c2dce1" },
+]
+
+[[package]]
 name = "gevent"
 version = "25.9.1"
 source = { registry = "https://mirrors.aliyun.com/pypi/simple/" }
@@ -849,6 +858,7 @@ dependencies = [
     { name = "asyncpg" },
     { name = "cos-python-sdk-v5" },
     { name = "fastapi" },
+    { name = "filelock" },
     { name = "greenlet" },
     { name = "httpx" },
     { name = "mcp", extra = ["cli"] },
@@ -877,6 +887,7 @@ requires-dist = [
     { name = "asyncpg", specifier = ">=0.31.0" },
     { name = "cos-python-sdk-v5", specifier = ">=1.9.41" },
     { name = "fastapi", specifier = ">=0.128.0" },
+    { name = "filelock", specifier = ">=3.20.3" },
     { name = "greenlet", specifier = ">=3.3.0" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "mcp", extras = ["cli"], specifier = ">=1.25.0" },

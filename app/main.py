@@ -1,4 +1,5 @@
 import logging
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
@@ -9,7 +10,6 @@ from app.infra.storage.postgres import get_postgres
 from app.infra.storage.redis import get_redis
 from app.interfaces.endpoints.routers import router
 from core.config import get_settings
-from contextlib import asynccontextmanager
 
 # 1. 加载配置信息
 settings = get_settings()
