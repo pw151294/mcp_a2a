@@ -1,9 +1,6 @@
 import logging
 import os
 
-from asyncpg import PrivilegeNotGranted
-from websockets.headers import parse_extension_item
-
 logging.basicConfig(
     level=logging.ERROR,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
