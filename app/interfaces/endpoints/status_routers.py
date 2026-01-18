@@ -1,17 +1,27 @@
 import logging
+from typing import List
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
+from app.application.services.status_service import StatusService
+from app.domain.models.HealthStatus import HealthStatus
 from app.interfaces.schemas import Response
+from app.interfaces.service_dependencies import get_status_service
 
 logger = logging.getLogger(__name__)
 status_router = APIRouter(prefix="/status", tags=["status"])
 
+
 @status_router.get(path="",
-                   response_model=Response,
+                   response_model=Response[List[HealthStatus]],
                    summary="系统健康检查",
                    description="检查系统的postgres、redis还有fastapi等组件的状态信息")
-async def get_status() -> Response:
+async def get_status(
+        status_service: StatusService = Depends(get_status_service)
+) -> Response:
     """系统健康检查 检查postgres/redis/fastapi/cos等服务"""
-    # todo 等待postgres/redis/cos/等服务接入之后补全代码
-    return Response.success()
+    statues = await status_service.check_all()
+    if any(item.status == "error" for item in statues):
+        return Response.fail(503, "系统存在服务异常", statues)
+
+    return Response.success(statues, "系统健康检查成功")

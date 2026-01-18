@@ -18,11 +18,16 @@ async def make_coffer_async(consumer: str) -> str:
 async def main_async():
     start_time = time.time()
 
-    task = [
-        make_coffer_async("Alice"),
-        make_coffer_async("Bob"),
-    ]
-    results = await asyncio.gather(*task)
+    results = await asyncio.gather(
+        *[make_coffer_async(consumer) for consumer in ["Alice", "Bob", "Charlie", "Diana"]],
+        return_exceptions=True
+    )
+    print(results)
+
+    results = await asyncio.gather(
+        *(make_coffer_async(consumer) for consumer in ["Eve", "Frank", "Grace", "Heidi"]),
+        return_exceptions=True
+    )
     print(results)
 
     end_time = time.time()
