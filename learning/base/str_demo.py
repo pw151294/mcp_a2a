@@ -10,6 +10,7 @@ if __name__ == '__main__':
     print(ens.lower())  # 全小写
     print(ens.capitalize())  # 仅句首大写
     print(ens.title())  # 首字母大写
+    print(ens*3) # 重复打印字符串多次
 
     # 对齐操作
     s_align = "Python"
