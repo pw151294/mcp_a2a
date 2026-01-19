@@ -1,7 +1,7 @@
 import logging
 
 from app.domain.external.health_checker import HealthChecker
-from app.domain.models.HealthStatus import HealthStatus
+from app.domain.models.health_status import HealthStatus
 from app.infra.storage.redis import RedisClient
 
 logger = logging.getLogger(__name__)

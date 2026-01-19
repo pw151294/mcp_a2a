@@ -2,7 +2,7 @@ import asyncio
 from typing import List
 
 from app.domain.external.health_checker import HealthChecker
-from app.domain.models.HealthStatus import HealthStatus
+from app.domain.models.health_status import HealthStatus
 
 
 class StatusService:

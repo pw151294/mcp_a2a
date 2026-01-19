@@ -4,7 +4,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.external.health_checker import HealthChecker
-from app.domain.models.HealthStatus import HealthStatus
+from app.domain.models.health_status import HealthStatus
 
 logger = logging.getLogger(__name__)
 

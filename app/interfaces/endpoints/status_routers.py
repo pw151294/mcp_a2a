@@ -4,7 +4,7 @@ from typing import List
 from fastapi import APIRouter, Depends
 
 from app.application.services.status_service import StatusService
-from app.domain.models.HealthStatus import HealthStatus
+from app.domain.models.health_status import HealthStatus
 from app.interfaces.schemas import Response
 from app.interfaces.service_dependencies import get_status_service
 

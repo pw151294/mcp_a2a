@@ -1,6 +1,6 @@
 from typing import Protocol
 
-from app.domain.models.HealthStatus import HealthStatus
+from app.domain.models.health_status import HealthStatus
 
 
 class HealthChecker(Protocol):
