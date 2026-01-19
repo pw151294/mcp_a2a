@@ -1,4 +1,5 @@
 poetry init # 初始化项目
+poetry build # 构建可安装的 *.whl 和 tar.gz 文件
 poetry install  # 安装项目依赖
 poetry add requests # 安装依赖包
 poetry shell # 进入虚拟环境
