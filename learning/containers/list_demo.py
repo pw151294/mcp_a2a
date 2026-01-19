@@ -17,9 +17,15 @@ if __name__ == '__main__':
     print(int(str(n)[::-1]))  # 整数反转
     print(a[::-1])  # 列表反转
 
+    # 使用zip函数
     original = [['a', 'b'], ['c', 'd'], ['e', 'f']]
     transposed = zip(*original)  # 转置二维数组
     print(list(transposed))
+    maths = [59, 64, 75, 86]
+    physics = [78, 98, 56, 56]
+    total = [x + y for (x, y) in zip(maths, physics)]
+    print(total)
+    print(dict(enumerate(total)))
 
     lst = [40, 10, 20, 30, 20, 50, 30, 20]
     print(min(range(len(lst)), key=lst.__getitem__))  # 返回最小值的索引
@@ -34,3 +40,17 @@ if __name__ == '__main__':
     print([i ** 2 for i in range(1, 100) if i % 2 == 1])  # 1-99之间所有奇数的平方列表
     # 嵌套推导
     print([ch for row in original for ch in row])  # 将二维数组展开为一维数组
+
+    # 使用.sort()函数对list排序
+    shuffle_list = [40, 10, 20, 30, 20, 50, 30, 20]
+    shuffle_list.sort(reverse=True)
+    print(shuffle_list)
+    shuffle_list.sort(reverse=False)
+    print(shuffle_list)
+
+    # 使用内置的sorted关键字对list排序
+    shuffle_list = [40, 10, 20, 30, 20, 50, 30, 20]
+    sorted_list = sorted(shuffle_list)
+    print(sorted_list)
+    sorted_list = sorted(shuffle_list, reverse=True)
+    print(sorted_list)
