@@ -1,4 +1,5 @@
 from collections import Counter
+from functools import reduce  # 使用标准库的 reduce
 
 if __name__ == '__main__':
     a = [1, 2, 3, 1, 2, 3, 2, 2, 4, 5, 1]
@@ -54,3 +55,15 @@ if __name__ == '__main__':
     print(sorted_list)
     sorted_list = sorted(shuffle_list, reverse=True)
     print(sorted_list)
+
+    # 使用map、filter还有reduce函数
+    lst = [40, 10, 20, 30, 20, 50, 30, 20]
+    # 每个元素乘以2
+    two_times_list = list(map(lambda x: x * 2, lst))
+    print(two_times_list)
+    # 过滤出所有3的倍数
+    three_times_list = list(filter(lambda x: True if x % 3 == 0 else False, lst))
+    print(three_times_list)
+    # 使用标准库 reduce 计算所有元素之和
+    total_sum = reduce((lambda x, y: x + y), three_times_list)
+    print(total_sum)
