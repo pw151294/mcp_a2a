@@ -51,7 +51,7 @@ class RedisStreamMessageQueue(MessageQueue):
             return None, None
         finally:
             # 释放分布式锁
-            await self.release_lock(lock_key, lock_val)
+            await self._release_lock(lock_key, lock_val)
 
     async def get(self, start_id: str = None, block_ms: int = None) -> Tuple[str, Any]:
         """从队列中获取一条消息但不删除它，返回消息ID和消息内容"""
@@ -134,7 +134,7 @@ class RedisStreamMessageQueue(MessageQueue):
 
         return None
 
-    async def release_lock(self, lock_key: str, lock_val: str) -> bool:
+    async def _release_lock(self, lock_key: str, lock_val: str) -> bool:
         """释放分布式锁"""
         # 1. 构建一段redis的脚本释放分布式锁
         release_script = """
