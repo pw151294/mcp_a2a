@@ -184,8 +184,8 @@ class BaseAgent(ABC):
                     "content": result.model_dump()
                 })
 
-                # 所有工具都执行完成之后 调用LLM获取汇总消息二次提问
-                message = await self._invoke_llm(tool_messages)
+            # 所有工具都执行完成之后 调用LLM获取汇总消息二次提问
+            message = await self._invoke_llm(tool_messages)
 
         else:
             # 超过最大迭代次数 则抛出错误

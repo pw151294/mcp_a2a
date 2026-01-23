@@ -4,7 +4,7 @@ from pathlib import Path
 import yaml
 from filelock import FileLock
 
-from app.domain.models.app_config import AppConfig, LLMConfig
+from app.domain.models.app_config import AppConfig, LLMConfig, AgentConfig, McpConfig
 from app.domain.repositories.app_config_repository import AppConfigRepository
 
 logger = logging.getLogger(__name__)
@@ -28,6 +28,8 @@ class FileAppConfigRepository(AppConfigRepository):
         if not self._config_path.exists():
             default_app_config = AppConfig(
                 llm_config=LLMConfig(),
+                agent_config=AgentConfig(),
+                mcp_config=McpConfig()
             )
             self.save(default_app_config)
 

@@ -8,3 +8,14 @@ agent_config:
   max_iterations: 100
   max_retries: 3
   max_search_results: 10
+mcp_config:
+  mcpServers:
+    bingsearch:
+      transport: streamable_http
+      enabled: true
+      description: 全网搜索引擎工具，当需要获取实时信息（如突发新闻、天气）、补充内部知识库未涵盖的内容或者进行事实核查时使用，该工具会返回相关的网页摘要和链接
+      env: null
+      command: null
+      args: null
+      url: http://localhost:8080/bing_search/mcp
+      headers: null
