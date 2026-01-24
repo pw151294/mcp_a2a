@@ -4,10 +4,11 @@ from typing import Dict, Optional
 from fastapi import APIRouter
 from fastapi.params import Depends, Body
 
-from app.domain.models.app_config import LLMConfig, AgentConfig, McpConfig
 from app.application.services.app_config_service import AppConfigService
-from app.interfaces.service_dependencies import get_app_config_service
+from app.domain.models.app_config import LLMConfig, AgentConfig, McpConfig
+from app.interfaces.schemas.app_config import ListMcpServerResponse
 from app.interfaces.schemas.base import Response
+from app.interfaces.service_dependencies import get_app_config_service
 
 logger = logging.getLogger(__name__)
 app_config_router = APIRouter(prefix="/app_config", tags=["设置模块"])
@@ -79,17 +80,20 @@ async def update_llm_config(
 
 @app_config_router.get(
     path="/mcp-servers",
-    response_model=Response[McpConfig],
+    response_model=Response[ListMcpServerResponse],
     summary="获取MCP服务器工具列表",
     description="获取当前系统的MC服务器列表，包含MCP服务名字、工具列表还有启用状态等"
 )
 async def get_mcp_servers(
         app_config_service: AppConfigService = Depends(get_app_config_service)
-):
+) -> Response:
     """获取当前系统的MCP服务器工具列表"""
     # todo 因为目前暂时未实现MCP客户端管理器 所以留到后面再实现
-    mcp_config = await app_config_service.get_mcp_servers()
-    return Response.success(data=mcp_config)
+    mcp_servers = await app_config_service.get_mcp_servers()
+    return Response.success(
+        msg="获取MCP服务器列表成功",
+        data=ListMcpServerResponse(mcp_servers=mcp_servers)
+    )
 
 
 @app_config_router.post(

@@ -1,7 +1,11 @@
+from typing import List
+
 from openai import NotFoundError
 
 from app.domain.models.app_config import LLMConfig, AppConfig, AgentConfig, McpConfig
 from app.domain.repositories.app_config_repository import AppConfigRepository
+from app.domain.services.tools.mcp import McpClientManager
+from app.interfaces.schemas.app_config import ListMcpServerItem
 
 
 class AppConfigService:
@@ -49,10 +53,36 @@ class AppConfigService:
 
         return app_config.agent_config
 
-    async def get_mcp_servers(self) -> McpConfig:
-        """根据MCP服务名称查询配置"""
+    async def get_mcp_servers(self) -> List[ListMcpServerItem]:
+        """获取MCP服务器列表"""
+        # 获取当前的应用配置
         app_config = await self._load_app_config()
-        return app_config.mcp_config
+
+        # 创建MCP客户端管理器 对配置信息部进行过滤
+        mcp_servers = []
+        mcp_client_manager = McpClientManager(
+            mcp_config=app_config.mcp_config,
+        )
+        try:
+            # 初始化MCP客户端管理器
+            await mcp_client_manager.initialize()
+
+            # 获取MCP客户端管理器的工具列表
+            tools = mcp_client_manager.tools
+
+            # 循环组装响应的工具格式
+            for server_name, server_config in app_config.mcp_config.mcpServers.items():
+                mcp_servers.append(ListMcpServerItem(
+                    server_name=server_name,
+                    enabled=server_config.enabled,
+                    transport=server_config.transport,
+                    tools=[tool.name for tool in tools.get(server_name, [])]
+                ))
+        finally:
+            # 清除MCP客户端管理器的相关资源
+            await mcp_client_manager.cleanup()
+
+        return mcp_servers
 
     async def update_and_create_mcp_config(self, mcp_config: McpConfig) -> McpConfig:
         """根据传递的数据新增/更新MCP配置"""

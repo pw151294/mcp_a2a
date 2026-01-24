@@ -23,7 +23,7 @@ class AgentConfig(BaseModel):
 class McpTransport(Enum):
     """MCP传输协议枚举"""
     STDIO = "stdio"
-    SSH = "ssh"
+    SSE = "sse"
     STREAMABLE_HTTP = "streamable_http"
 
 
@@ -49,7 +49,7 @@ class McpServerConfig(BaseModel):
     def validate_mcp_server_config(self):
         """校验MCP服务配置的相关信息 包含URl+command"""
         # 1.将transport是否为sse/streamable_http
-        if self.transport in [McpTransport.SSH, McpTransport.STREAMABLE_HTTP]:
+        if self.transport in [McpTransport.SSE, McpTransport.STREAMABLE_HTTP]:
             if not self.url:
                 raise ValueError("在sse或者是streamable_http传输协议中必须传递URL")
         # 判断transport是否是stdio类型

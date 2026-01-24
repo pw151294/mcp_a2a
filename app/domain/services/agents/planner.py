@@ -61,45 +61,38 @@ class PlanAgent(BaseAgent):
             else:
                 yield event
 
-    async def update_plan(self, plan: Plan, step: Step) -> AsyncGenerator[Event, None]:
-        """根据传递的原始规划+子步骤更新事件"""
-        query = UPDATE_PLAN_PROMPT.format(
-            plan=plan.model_dump_json(),
-            step=step.model_dump_json()
-        )
+            # 2.调用invoke获取对应的事件
+            async for event in self.invoke(query):
+                # 3.判断规划Agent生成的事件是不是消息事件
+                if isinstance(event, MessageEvent):
+                    # 4.记录日志并解析json
+                    logger.info(f"PlannerAgent生成消息: {event.message}")
+                    parsed_obj = await self._json_parser.invoke(event.message)
 
-        # 调用invoke获取对应的事件
-        async for event in self.invoke(query):
-            # 判断规划Agent生成的事件是不是消息事件
-            if isinstance(event, MessageEvent):
-                # 记录日志并解析json
-                logger.info(f"规划智能体生成消息：{event.message}")
-                parsed_obj = await self._json_parser.invoke(event.message)
+                    # 5.将解析对象转换成Plan
+                    updated_plan = Plan.model_validate(parsed_obj)
 
-                # 将解析对象转换成Plan
-                updated_plan = Plan.model_validate(parsed_obj)
+                    # 6.拷贝更新计划中的steps，避免造成数据污染
+                    new_steps = [Step.model_validate(step) for step in updated_plan.steps]
 
-                # 拷贝更新中的计划列表
-                new_steps = [Step.model_validate(step) for step in step.steps]
+                    # 7.查询旧计划中第一个未完成的计划
+                    first_pending_index = None
+                    for idx, step in enumerate(plan.steps):
+                        if not step.done:
+                            first_pending_index = idx
+                            break
 
-                # 查询旧计划第一个未完成的计划
-                first_pending_idx = None
-                for idx, step in enumerate(plan.steps):
-                    if not step.done:
-                        first_pending_idx = idx
-                        break
+                    # 8.判断是否有未完成的步骤，如果有则执行更新
+                    if first_pending_index is not None:
+                        # 9.获取历史已完成的子步骤并更新
+                        updated_steps = plan.steps[:first_pending_index]
+                        updated_steps.extend(new_steps)
 
-                # 判断是否存在未完成的步骤 如果有则执行更新
-                if first_pending_idx is not None:
-                    # 获取历史已完成的子步骤并更新
-                    updated_steps = plan.steps[:first_pending_idx]
-                    updated_steps.extend(new_steps)
+                        # 10.更新plan规划
+                        plan.steps = updated_steps
 
-                    # 更新plan规划
-                    plan.steps = updated_steps
-
-                # 返回规划更新事件
-                yield PlanEvent(plan=updated_plan, status=PlanEventStatus.UPDATED)
-
-            else:
-                yield event
+                    # 11.返回规划更新事件
+                    yield PlanEvent(plan=plan, status=PlanEventStatus.UPDATED)
+                else:
+                    # 其他事件则直接返回
+                    yield event
