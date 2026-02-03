@@ -1,7 +1,7 @@
 import logging
 from typing import Optional, AsyncGenerator
 
-from app.domain.models.event import Event, MessageEvent, PlanEvent, PlanEventStatus
+from app.domain.models.event import Event, MessageEvent, PlanEvent, PlanEventStatus, BaseEvent
 from app.domain.models.message import Message
 from app.domain.models.plan import Plan, Step
 from app.domain.services.agents.base import BaseAgent
@@ -61,38 +61,46 @@ class PlanAgent(BaseAgent):
             else:
                 yield event
 
-            # 2.调用invoke获取对应的事件
-            async for event in self.invoke(query):
-                # 3.判断规划Agent生成的事件是不是消息事件
-                if isinstance(event, MessageEvent):
-                    # 4.记录日志并解析json
-                    logger.info(f"PlannerAgent生成消息: {event.message}")
-                    parsed_obj = await self._json_parser.invoke(event.message)
+    async def update_plan(self, plan: Plan, step: Step) -> AsyncGenerator[BaseEvent, None]:
+        """根据传递的原始规划+子步骤更新事件"""
+        # 1.使用plan+step创建更新Plan提示词
+        query = UPDATE_PLAN_PROMPT.format(
+            plan=plan.model_dump_json(),
+            step=step.model_dump_json(),
+        )
 
-                    # 5.将解析对象转换成Plan
-                    updated_plan = Plan.model_validate(parsed_obj)
+        # 2.调用invoke获取对应的事件
+        async for event in self.invoke(query):
+            # 3.判断规划Agent生成的事件是不是消息事件
+            if isinstance(event, MessageEvent):
+                # 4.记录日志并解析json
+                logger.info(f"PlannerAgent生成消息: {event.message}")
+                parsed_obj = await self._json_parser.invoke(event.message)
 
-                    # 6.拷贝更新计划中的steps，避免造成数据污染
-                    new_steps = [Step.model_validate(step) for step in updated_plan.steps]
+                # 5.将解析对象转换成Plan
+                updated_plan = Plan.model_validate(parsed_obj)
 
-                    # 7.查询旧计划中第一个未完成的计划
-                    first_pending_index = None
-                    for idx, step in enumerate(plan.steps):
-                        if not step.done:
-                            first_pending_index = idx
-                            break
+                # 6.拷贝更新计划中的steps，避免造成数据污染
+                new_steps = [Step.model_validate(step) for step in updated_plan.steps]
 
-                    # 8.判断是否有未完成的步骤，如果有则执行更新
-                    if first_pending_index is not None:
-                        # 9.获取历史已完成的子步骤并更新
-                        updated_steps = plan.steps[:first_pending_index]
-                        updated_steps.extend(new_steps)
+                # 7.查询旧计划中第一个未完成的计划
+                first_pending_index = None
+                for idx, step in enumerate(plan.steps):
+                    if not step.done:
+                        first_pending_index = idx
+                        break
 
-                        # 10.更新plan规划
-                        plan.steps = updated_steps
+                # 8.判断是否有未完成的步骤，如果有则执行更新
+                if first_pending_index is not None:
+                    # 9.获取历史已完成的子步骤并更新
+                    updated_steps = plan.steps[:first_pending_index]
+                    updated_steps.extend(new_steps)
 
-                    # 11.返回规划更新事件
-                    yield PlanEvent(plan=plan, status=PlanEventStatus.UPDATED)
-                else:
-                    # 其他事件则直接返回
-                    yield event
+                    # 10.更新plan规划
+                    plan.steps = updated_steps
+
+                # 11.返回规划更新事件
+                yield PlanEvent(plan=plan, status=PlanEventStatus.UPDATED)
+            else:
+                # 其他事件则直接返回
+                yield event

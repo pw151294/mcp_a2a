@@ -5,8 +5,8 @@ from fastapi import APIRouter
 from fastapi.params import Depends, Body
 
 from app.application.services.app_config_service import AppConfigService
-from app.domain.models.app_config import LLMConfig, AgentConfig, McpConfig
-from app.interfaces.schemas.app_config import ListMcpServerResponse
+from app.domain.models.app_config import LLMConfig, AgentConfig, McpConfig, A2AServerConfig
+from app.interfaces.schemas.app_config import ListMcpServerResponse, ListA2AServerResponse
 from app.interfaces.schemas.base import Response
 from app.interfaces.service_dependencies import get_app_config_service
 
@@ -140,3 +140,66 @@ async def set_mcp_server_enabled(
     """"根据传递的server_name+enabled更新服务的启用状态"""
     await app_config_service.set_mcp_server_enabled(server_name, enabled)
     return Response.success(msg="更新MCP启用状态成功")
+
+
+@app_config_router.get(
+    path="/a2a_servers",
+    response_model=Response[ListA2AServerResponse],
+    summary="获取a2a服务器列表",
+    description="获取项目中所有已配置的a2a服务列表"
+)
+async def get_a2a_servers(
+        app_config_service: AppConfigService = Depends(get_app_config_service)
+) -> Response:
+    """获取a2a服务列表"""
+    a2a_servers = await app_config_service.get_a2a_server()
+    return Response.success(
+        msg="获取a2a服务列表成功",
+        data=ListA2AServerResponse(a2a_servers=a2a_servers)
+    )
+
+
+@app_config_router.post(
+    path="/a2a-servers/{a2a_id}/delete",
+    response_model=Response[Optional[Dict]],
+    summary="删除指定的a2a服务",
+    description="根据A2A的服务标识删除指定的服务"
+)
+async def delete_a2a_server(
+        a2a_id: str,
+        app_config_service: AppConfigService = Depends(get_app_config_service)
+) -> Response[Optional[Dict]]:
+    """根据ID删除a2a服务"""
+    await app_config_service.delete_a2a_server(a2a_id)
+    return Response.success(msg="删除a2a配置成功")
+
+
+@app_config_router.post(
+    path="/a2a-servers/{a2a_id}/enabled",
+    response_model=Response[Optional[Dict]],
+    summary="更新a2a服务的启用状态",
+    description="根据ID更新a2a的启用状态"
+)
+async def set_a2a_enabled(
+        a2a_id: str,
+        enabled: bool = Body(embed=True),
+        app_config_service: AppConfigService = Depends(get_app_config_service)
+) -> Response[Optional[Dict | str]]:
+    """根据ID修改a2a服务的启用状态"""
+    await app_config_service.set_a2a_server_enabled(a2a_id, enabled)
+    return Response.success(msg="修改a2a服务启用状态成功")
+
+
+@app_config_router.post(
+    path="/a2a-servers/create",
+    response_model=Response[Optional[Dict]],
+    summary="创建a2a服务",
+    description="创建新的A2A服务器配置"
+)
+async def create_a2a_server(
+        base_url: str = Body(embed=True),
+        app_config_service: AppConfigService = Depends(get_app_config_service)
+) -> Response[Optional[Dict | str]]:
+    """创建新的a2a服务器配置"""
+    await app_config_service.create_a2a_server(base_url)
+    return Response.success(msg="创建a2a服务配置成功")

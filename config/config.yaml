@@ -18,14 +18,19 @@ mcp_config:
       command: null
       args: null
       url: http://localhost:27017/bing_search/mcp
-      headers: { }
+      headers: {}
     jina-mcp-server:
       transport: streamable_http
       enabled: true
-      description: "Jina AI MCP 服务器"
+      description: Jina AI MCP 服务器
       env: null
       command: null
       args: null
-      url: "https://mcp.jina.ai/v1"
+      url: https://mcp.jina.ai/v1
       headers:
-        Authorization: "Bearer jina_a09d875cbb87422185ecd8cc07938b11yVhafmVsL5IFbksNhO47Q8PhlxEa"
+        Authorization: Bearer jina_a09d875cbb87422185ecd8cc07938b11yVhafmVsL5IFbksNhO47Q8PhlxEa
+a2a_config:
+  a2a_servers:
+  - id: 4da14586-ec9e-48fb-9f78-98ca72867417
+    base_url: http://localhost:9999
+    enabled: true

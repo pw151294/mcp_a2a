@@ -1,3 +1,4 @@
+import uuid
 from enum import Enum
 from typing import Dict, Any, Optional, List
 
@@ -67,8 +68,21 @@ class McpConfig(BaseModel):
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
 
+class A2AServerConfig(BaseModel):
+    """A2A服务配置"""
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    base_url: str  # 服务基础URL
+    enabled: bool = True  # 是否开启
+
+
+class A2AConfig(BaseModel):
+    """A2A配置"""
+    a2a_servers: List[A2AServerConfig] = Field(default_factory=list)
+
+
 class AppConfig(BaseModel):
     """应用配置信息 包括Agent配置、LLM提供商、A2A网络还有MCP服务等信息"""
     llm_config: LLMConfig
     agent_config: AgentConfig  # 智能体通用的配置
     mcp_config: McpConfig  # MCP配置
+    a2a_config: A2AConfig  # 多智能体配置
